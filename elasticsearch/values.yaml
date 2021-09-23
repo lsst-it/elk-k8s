@@ -58,9 +58,22 @@ secretMounts: []
 #    path: /usr/share/elasticsearch/config/certs
 #    defaultMode: 0755
 
+hostAliases: []
+#- ip: "127.0.0.1"
+#  hostnames:
+#  - "foo.local"
+#  - "bar.local"
+
 image: "docker.elastic.co/elasticsearch/elasticsearch"
 imageTag: "8.0.0-SNAPSHOT"
 imagePullPolicy: "IfNotPresent"
+
+podAnnotations: {}
+  # iam.amazonaws.com/role: es-cluster
+
+# additionals labels
+labels:
+  namespace: elk
 
 esJavaOpts: "" # example: "-Xmx1g -Xms1g"
 
@@ -223,8 +236,6 @@ imagePullSecrets: []
 nodeSelector: {}
 tolerations: []
 
-# Enabling this will publicly expose your Elasticsearch instance.
-# Only enable this if you have security enabled on your cluster
 ingress:
   enabled: true
   annotations:
@@ -323,6 +334,9 @@ networkPolicy:
     #           operator: In
     #           values:
     #             - frontend
+
+tests:
+  enabled: true
 
 # Deprecated
 # please use the above podSecurityContext.fsGroup instead
