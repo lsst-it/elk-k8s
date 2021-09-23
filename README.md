@@ -1,4 +1,7 @@
 # elk-k8s
-To deploy:
+To Deploy ElasticSearch:
 ..code:
-  helm install elasticsearch elastic/elasticsearch -f ./values.yaml
+  helm install elasticsearch elastic/elasticsearch
+
+To Deploy Kibana:
+  helm install kibana elastic/kibana -f ./values.yaml
