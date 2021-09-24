@@ -1,0 +1,22 @@
+input: |-
+  udp {
+    port => 1514
+    type => syslog
+  }
+  tcp {
+    port => 1514
+    type => syslog
+  }
+  http { port => 8080 }
+service:
+  type: LoadBalancer
+  ports:
+    syslog-udp:
+      port: 1514
+      targetPort: syslog-udp
+      protocol: UDP
+    syslog-tcp:
+      port: 1514
+      targetPort: syslog-tcp
+      protocol: TCP
+  loadBalancerIP: "139.229.135.153"
