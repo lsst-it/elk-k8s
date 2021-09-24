@@ -16,11 +16,6 @@ data:
         port => 1514
         type => syslog
       }
-      tcp {
-        port => 1514
-        type => syslog
-      }
-      http { port => 8080 }
     }
     output {
       # elasticsearch {
@@ -49,10 +44,6 @@ spec:
   type: ClusterIP
   clusterIP: None
   ports:
-    - name: http
-      port: 8080
-      protocol: TCP
-      targetPort: http
     - name: syslog-udp
       port: 1514
       protocol: UDP
@@ -75,10 +66,6 @@ spec:
   type: LoadBalancer
   loadBalancerIP: 139.229.135.153
   ports:
-    - name: http
-      port: 8080
-      protocol: TCP
-      targetPort: http
     - name: syslog-udp
       port: 1514
       protocol: UDP
@@ -152,15 +139,6 @@ spec:
             - containerPort: 1514
               name: syslog-udp
               protocol: UDP
-            - containerPort: 1514
-              name: syslog-tcp
-              protocol: TCP
-            - containerPort: 8080
-              name: http
-              protocol: TCP
-            - containerPort: 9600
-              name: monitoring
-              protocol: TCP
           livenessProbe:
             failureThreshold: 6
             httpGet:
