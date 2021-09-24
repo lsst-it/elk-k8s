@@ -1,0 +1,191 @@
+---
+# Source: logstash/templates/configuration-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash
+  labels:
+    app.kubernetes.io/name: logstash
+    helm.sh/chart: logstash-3.6.7
+    app.kubernetes.io/instance: logstash
+    app.kubernetes.io/managed-by: Helm
+data:
+  logstash.conf: |-
+    input {
+      udp {
+        port => 1514
+        type => syslog
+      }
+      tcp {
+        port => 1514
+        type => syslog
+      }
+      http { port => 8080 }
+    }
+    output {
+      # elasticsearch {
+      #   hosts => ["${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}"]
+      #   manage_template => false
+      #   index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
+      # }
+      # gelf {
+      #   host => "${GRAYLOG_HOST}"
+      #   port => ${GRAYLOG_PORT}
+      # }
+      stdout {}
+    }
+---
+# Source: logstash/templates/headless-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash-headless
+  labels:
+    app.kubernetes.io/name: logstash
+    helm.sh/chart: logstash-3.6.7
+    app.kubernetes.io/instance: logstash
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: http
+    - name: syslog-udp
+      port: 1514
+      protocol: UDP
+      targetPort: syslog-udp
+  selector: 
+    app.kubernetes.io/name: logstash
+    app.kubernetes.io/instance: logstash
+---
+# Source: logstash/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+  labels:
+    app.kubernetes.io/name: logstash
+    helm.sh/chart: logstash-3.6.7
+    app.kubernetes.io/instance: logstash
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 139.229.135.153
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: http
+    - name: syslog-udp
+      port: 1514
+      protocol: UDP
+      targetPort: syslog-udp
+  selector: 
+    app.kubernetes.io/name: logstash
+    app.kubernetes.io/instance: logstash
+---
+# Source: logstash/templates/sts.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash
+  labels:
+    app.kubernetes.io/name: logstash
+    helm.sh/chart: logstash-3.6.7
+    app.kubernetes.io/instance: logstash
+    app.kubernetes.io/managed-by: Helm
+spec:
+  serviceName: logstash-headless
+  replicas: 1
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: logstash
+      app.kubernetes.io/instance: logstash
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: logstash
+        helm.sh/chart: logstash-3.6.7
+        app.kubernetes.io/instance: logstash
+        app.kubernetes.io/managed-by: Helm
+      annotations:
+        checksum/configuration: edf5294ebb8ac2673c0013892027930249e4b43209c8d27454c8c9855173dd1f
+    spec:
+      
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: logstash
+                    app.kubernetes.io/instance: logstash
+                namespaces:
+                  - "elk"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+        - name: logstash
+          image: docker.io/bitnami/logstash:7.15.0-debian-10-r0
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: LOGSTASH_CONF_FILENAME
+              value: "logstash.conf"
+            - name: LOGSTASH_ENABLE_MULTIPLE_PIPELINES
+              value: "false"
+            - name: LOGSTASH_EXPOSE_API
+              value: "yes"
+            - name: LOGSTASH_API_PORT_NUMBER
+              value: "9600"
+          ports: 
+            - containerPort: 1514
+              name: syslog-udp
+              protocol: UDP
+            - containerPort: 1514
+              name: syslog-tcp
+              protocol: TCP
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+            - containerPort: 9600
+              name: monitoring
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /
+              port: monitoring
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /
+              port: monitoring
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            limits: {}
+            requests: {}
+          volumeMounts:
+            - name: configurations
+              mountPath: /bitnami/logstash/config
+      volumes:
+        - name: configurations
+          configMap:
+            name: logstash
