@@ -1,0 +1,29 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kibana-kibana
+  labels: 
+    app: kibana
+    release: "kibana"
+    heritage: Helm
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+spec:
+  ingressClassName: "nginx"
+  tls:
+    - hosts:
+      - it-elk.dev.lsst.org
+      secretName: elk-tls
+  rules:
+  - host: it-elk.dev.lsst.org
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: kibana
+            port:
+              number: 5601
