@@ -1,24 +1,4 @@
 ---
-# Source: kibana/templates/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: kibana-kibana
-  labels: 
-    app: kibana
-    release: "kibana"
-    heritage: Helm
-spec:
-  type: ClusterIP
-  ports:
-    - port: 5601
-      protocol: TCP
-      name: http
-      targetPort: 5601
-  selector:
-    app: kibana
-    release: "kibana"
----
 # Source: kibana/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -29,7 +9,7 @@ metadata:
     release: "kibana"
     heritage: Helm
 spec:
-  replicas: 3
+  replicas: 1
   strategy:
     type: Recreate
   selector:
@@ -56,11 +36,11 @@ spec:
             - ALL
           runAsNonRoot: true
           runAsUser: 1000
-        image: "docker.elastic.co/kibana/kibana:8.0.0-SNAPSHOT"
+        image: "docker.elastic.co/kibana/kibana:7.16.3"
         imagePullPolicy: "IfNotPresent"
         env:
-          - name: ELASTICSEARCH_HOSTS
-            value: "http://elasticsearch-master:9200"
+          - name: ELASTICSEARCH_URL
+            value: "http://elasticsearch:9200"
           - name: SERVER_HOST
             value: "0.0.0.0"
           - name: NODE_OPTIONS
@@ -120,4 +100,3 @@ spec:
             cpu: 1000m
             memory: 2Gi
         volumeMounts:
-

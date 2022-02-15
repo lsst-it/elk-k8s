@@ -1,4 +1,5 @@
 ---
+# Source: kibana/templates/ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -24,6 +25,6 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: kibana
+            name: kibana-kibana
             port:
               number: 5601
