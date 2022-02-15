@@ -1,2 +1,7 @@
 #!/usr/bin/env bash 
-helm install elasticsearch --set master.replicas=3,coordinating.service.type=LoadBalancer bitnami/elasticsearch -n it-elk
+set -ie
+kubectl create ns it-elk
+kubectl apply -n it-elk -f pdb.yaml
+kubectl apply -n it-elk -f svc-headless.yaml
+kubectl apply -n it-elk -f svc.yaml
+kubectl apply -n it-elk -f statefullset.yaml
