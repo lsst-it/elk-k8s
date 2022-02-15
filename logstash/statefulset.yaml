@@ -28,7 +28,7 @@ spec:
         heritage: "Helm"
         release: "logstash"
       annotations:
-        pipelinechecksum: 3cb51d47d31441a3472b6feb0a767af68921d9c1c9d4ac4c0b77f54e70990c2
+        pipelinechecksum: 717bf26e8df6b7c3206e74f2cab503470348ac40053e0d82a1e3968edb8609a
     spec:
       securityContext:
         fsGroup: 1000
