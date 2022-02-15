@@ -21,13 +21,5 @@ spec:
   ports:
     - name: logs
       port: 5144
-      protocol: TCP
+      protocol: UDP
       targetPort: 5144
-    - name: http
-      port: 8080
-      protocol: TCP
-      targetPort: 8080
-    - name: elasticsearch
-      port: 9200
-      protocol: TCP
-      targetPort: 9200
