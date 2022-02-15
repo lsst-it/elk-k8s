@@ -3,26 +3,26 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: elasticsearch-master
+  name: elasticsearch
   labels:
     heritage: "Helm"
     release: "elasticsearch"
     chart: "elasticsearch"
-    app: "elasticsearch-master"
+    app: "elasticsearch"
   annotations:
     esMajorVersion: "7"
 spec:
-  serviceName: elasticsearch-master-headless
+  serviceName: elasticsearch-headless
   selector:
     matchLabels:
-      app: "elasticsearch-master"
+      app: "elasticsearch"
   replicas: 3
   podManagementPolicy: Parallel
   updateStrategy:
     type: RollingUpdate
   volumeClaimTemplates:
   - metadata:
-      name: elasticsearch-master
+      name: elasticsearch
     spec:
       accessModes:
       - ReadWriteOnce
@@ -31,11 +31,11 @@ spec:
           storage: 100Gi
   template:
     metadata:
-      name: "elasticsearch-master"
+      name: "elasticsearch"
       labels:
         release: "elasticsearch"
         chart: "elasticsearch"
-        app: "elasticsearch-master"
+        app: "elasticsearch"
       annotations:
         
     spec:
@@ -51,7 +51,7 @@ spec:
               - key: app
                 operator: In
                 values:
-                - "elasticsearch-master"
+                - "elasticsearch"
             topologyKey: kubernetes.io/hostname
       terminationGracePeriodSeconds: 120
       volumes:
@@ -159,9 +159,9 @@ spec:
               fieldRef:
                 fieldPath: metadata.name
           - name: cluster.initial_master_nodes
-            value: "elasticsearch-master-0,elasticsearch-master-1,elasticsearch-master-2,"
+            value: "elasticsearch-0,elasticsearch-1,elasticsearch-2,"
           - name: discovery.seed_hosts
-            value: "elasticsearch-master-headless"
+            value: "elasticsearch-headless"
           - name: cluster.name
             value: "elasticsearch"
           - name: network.host
@@ -179,5 +179,5 @@ spec:
           - name: node.remote_cluster_client
             value: "true"
         volumeMounts:
-          - name: "elasticsearch-master"
+          - name: "elasticsearch"
             mountPath: /usr/share/elasticsearch/data

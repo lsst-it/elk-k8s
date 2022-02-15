@@ -3,12 +3,12 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: elasticsearch-master
+  name: elasticsearch
   labels:
     heritage: "Helm"
     release: "elasticsearch"
     chart: "elasticsearch"
-    app: "elasticsearch-master"
+    app: "elasticsearch"
   annotations:
     {}
 spec:
@@ -16,7 +16,7 @@ spec:
   selector:
     release: "elasticsearch"
     chart: "elasticsearch"
-    app: "elasticsearch-master"
+    app: "elasticsearch"
   ports:
   - name: http
     protocol: TCP
