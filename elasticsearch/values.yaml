@@ -1,0 +1,20 @@
+---
+image: "docker.elastic.co/elasticsearch/elasticsearch"
+imageTag: "7.16.3"
+imagePullPolicy: "IfNotPresent"
+
+service:
+  enabled: true
+  labels: {}
+  labelsHeadless: {}
+  type: LoadBalancer
+  # Consider that all endpoints are considered "ready" even if the Pods themselves are not
+  # https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/#ServiceSpec
+  publishNotReadyAddresses: false
+  nodePort: ""
+  annotations: {}
+  httpPortName: http
+  transportPortName: transport
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+  externalTrafficPolicy: ""

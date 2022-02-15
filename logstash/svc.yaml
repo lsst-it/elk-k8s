@@ -1,0 +1,25 @@
+---
+# Source: logstash/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: "logstash-logstash"
+  labels:
+    app: "logstash-logstash"
+    chart: "logstash"
+    heritage: "Helm"
+    release: "logstash"
+  annotations:
+    {}
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 139.229.134.152
+  selector:
+    app: "logstash-logstash"
+    chart: "logstash"
+    release: "logstash"
+  ports:
+    - name: logs
+      port: 5144
+      protocol: UDP
+      targetPort: 5144
