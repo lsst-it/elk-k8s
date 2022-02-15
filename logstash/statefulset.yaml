@@ -28,6 +28,7 @@ spec:
         heritage: "Helm"
         release: "logstash"
       annotations:
+        pipelinechecksum: 3cb51d47d31441a3472b6feb0a767af68921d9c1c9d4ac4c0b77f54e70990c2
     spec:
       securityContext:
         fsGroup: 1000
@@ -44,6 +45,9 @@ spec:
             topologyKey: kubernetes.io/hostname
       terminationGracePeriodSeconds: 120
       volumes:
+        - name: logstashpipeline
+          configMap:
+            name: logstash-logstash-pipeline
       containers:
       - name: "logstash"
         securityContext:
@@ -87,3 +91,6 @@ spec:
           - name: LS_JAVA_OPTS
             value: "-Xmx1g -Xms1g"
         volumeMounts:
+          - name: logstashpipeline
+            mountPath: /usr/share/logstash/pipeline/logstash.conf
+            subPath: logstash.conf
