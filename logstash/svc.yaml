@@ -1,0 +1,33 @@
+---
+# Source: logstash/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: "logstash-logstash"
+  labels:
+    app: "logstash-logstash"
+    chart: "logstash"
+    heritage: "Helm"
+    release: "logstash"
+  annotations:
+    {}
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 139.229.134.152
+  selector:
+    app: "logstash-logstash"
+    chart: "logstash"
+    release: "logstash"
+  ports:
+    - name: logs
+      port: 5144
+      protocol: TCP
+      targetPort: 5144
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: elasticsearch
+      port: 9200
+      protocol: TCP
+      targetPort: 9200

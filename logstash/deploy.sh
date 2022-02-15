@@ -1,2 +1,6 @@
-#/usr/bin/env bash
-helm install logstash --set service.type=LoadBalancer bitnami/logstash -n it-elk
+#!/usr/bin/env bash 
+set -ie
+kubectl apply -n it-elk -f pdb.yaml
+kubectl apply -n it-elk -f svc-headless.yaml
+kubectl apply -n it-elk -f svc.yaml
+kubectl apply -n it-elk -f statefulset.yaml
