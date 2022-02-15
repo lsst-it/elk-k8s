@@ -15,10 +15,10 @@ spec:
   ingressClassName: "nginx"
   tls:
     - hosts:
-      - it-elk.dev.lsst.org
+      - bdc-elk.dev.lsst.org
       secretName: elk-tls
   rules:
-  - host: it-elk.dev.lsst.org
+  - host: bdc-elk.dev.lsst.org
     http:
       paths:
       - path: /
